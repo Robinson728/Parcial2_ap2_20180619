@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	  <StartWorkingDirectory>$(MSBuildProjectDirectory)</StartWorkingDirectory>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="DAL\" />
+    <Folder Include="BLL\" />
+    <Folder Include="Pages\Consultas\" />
+    <Folder Include="Pages\Registros\" />
+  </ItemGroup>
+
+</Project>
