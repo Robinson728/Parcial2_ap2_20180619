@@ -1,0 +1,90 @@
+﻿@page "/cClientes"
+
+<EditForm Model="clientes">
+    <DataAnnotationsValidator/>
+    <div class="card">
+         
+        <div class="card-header">
+            <h2>Consulta de Clientes</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group">
+                <label>Filtrar por</label>
+                <div class="input-group-append">
+                    <InputSelect @bind-Value="filtro" class="form-control col-2">
+                        <option value="0">Todo</option>
+                        <option value="1">Id</option>
+                        <option value="2">Nombre</option>
+                    </InputSelect>
+                    <InputText @bind-Value="criterio" class="form-control col-8" placeholder="Criterio" />
+                    <button type="button" class="btn btn-primary col-1" @onclick="Buscar"><i class="oi oi-magnifying-glass mr-2" />Buscar</button>
+                    <button type="button" class="btn btn-success col-1" @onclick="Nuevo"><i class="oi oi-file mr-2" />Nuevo</button>
+                </div>
+            </div>
+
+            <div class="table-responsive text-nowrap" style="position:relative; height:200px; overflow:auto; display:block;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombres</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in clientes)
+                        {
+                            <tr>
+                                <td>@item.ClienteId</td>
+                                <td>@item.Nombres</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</EditForm> 
+@code {
+    public List<Clientes> clientes = new List<Clientes>();
+
+    private string filtro;
+    private string criterio;
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Nuevo()
+    {
+        clientes = new List<Clientes>();
+        filtro = "0";
+        criterio = string.Empty;
+    }
+
+    public void Buscar()
+    {
+        clientes = new List<Clientes>();
+
+        if (criterio.Length > 0)
+        {
+            switch (filtro)
+            {
+                case "0"://Todo
+                    clientes = ClientesBLL.GetList(e => true);
+                    break;
+                case "1"://Id
+                    clientes = ClientesBLL.GetList(e => e.ClienteId == Conversiones.ToInt(criterio));
+                    break;
+                case "2"://Nombres
+                    clientes = ClientesBLL.GetList(e => e.Nombres.Contains(criterio));
+                    break;
+            }
+        }
+        else
+            clientes = ClientesBLL.GetList(e => true);
+    }
+}
