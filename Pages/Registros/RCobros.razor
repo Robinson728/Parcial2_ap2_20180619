@@ -1,0 +1,146 @@
+﻿@page "/rCobros"
+@page "/rCobros/{CobroId:int}"
+
+@inject IToastService toast
+
+<EditForm Model="ventas" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Registro de Cobros</h2>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>Cobro Id</label>
+                        <div class="input-group">
+                            <InputNumber  @bind-Value="ventas" class="form-control" col-4 />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar"><i class="oi oi-magnifying-glass px-3" /></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col form-group">
+                        <label>Fecha</label>
+                        <InputDate @bind-Value="ventas" class="form-control"  />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <InputSelect @bind-Value="ventas"  class="form-control">
+                        
+                    </InputSelect>
+                </div>
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <h5>Facturas Pendientes</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive text-nowrap" style="position: relative; height:200px; overflow: auto; display: block;">
+                            <table class="table table-striped">
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                        <th>Balance</th>
+                                        <th>Cobrado</th>
+                                        <th>Pagar</th>
+                                    </tr>
+                                </thead>
+                                <!--<tbody>-->
+                                @*  @foreach (var item in collection)
+                                    {
+
+                                    }*@
+                                <!--</tbody>-->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="form-group row m-1">
+                                <label class="col-form-label">Totales:</label>
+                                <div class="input-group col-sm-3">
+                                    <InputNumber @bind-Value="ventas" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group row">
+                                <label class="col-form-label">Total Cobrado</label>
+                                <div class="col-sm-3">
+                                    <InputNumber @bind-Value="ventas" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-info">
+                    <h5>Observaciones</h5>
+                    <InputTextArea class="form-control" />
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="form-group text-center" display: inline-block>
+                <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo"><i class="oi oi-file mr-2" />Nuevo</button>
+                <button type="submit" class="btn btn-lg btn-success"><i class="oi oi-account-login mr-2" style="transform: rotate(90deg)" />Guardar</button>
+                <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar"><i class="oi oi-trash mr-2" />Eliminar</button>
+            </div>
+        </div>
+
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CobroId { get; set; }
+    public Ventas ventas = new Ventas();
+
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Limpiar()
+    {
+
+    }
+
+    public void Buscar()
+    {
+
+    }
+
+    public void Nuevo()
+    {
+        Limpiar();
+    }
+
+    public void Guardar()
+    {
+
+    }
+
+    public void Eliminar()
+    {
+
+    }
+}
