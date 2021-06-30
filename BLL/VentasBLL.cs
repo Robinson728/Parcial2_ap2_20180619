@@ -52,5 +52,67 @@ namespace Parcial2_ap2_20180619.BLL
 
             return lista;
         }
+
+        public static List<CobrosDetalle> GetPendientes(int id)
+        {
+            Contexto contexto = new Contexto();
+            List<CobrosDetalle> pendientes = new List<CobrosDetalle>();
+
+            try
+            {
+                var lista = contexto.Ventas.Where(r => r.ClienteId == id && r.Balance > 0).ToList();
+
+                foreach (var item in lista)
+                {
+                    pendientes.Add(new CobrosDetalle
+                    {
+                        VentaId = item.VentaId,
+                        Venta = item,
+                        Cobrado = 0
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return pendientes;
+        }
+
+        public static List<CobrosDetalle> GetPagadas(int id)
+        {
+            Contexto contexto = new Contexto();
+            List<CobrosDetalle> pendientes = new List<CobrosDetalle>();
+
+            try
+            {
+                var lista = contexto.Ventas.Where(r => r.ClienteId == id && r.Balance == 0).ToList();
+
+                foreach (var item in lista)
+                {
+                    pendientes.Add(new CobrosDetalle
+                    {
+                        VentaId = item.VentaId,
+                        Venta = item,
+                        Cobrado = 0
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return pendientes;
+        }
     }
 }
