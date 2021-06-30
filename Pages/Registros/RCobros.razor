@@ -3,7 +3,7 @@
 
 @inject IToastService toast
 
-<EditForm Model="ventas" OnValidSubmit="Guardar">
+<EditForm Model="cobros" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
     <div class="card">
 
@@ -17,7 +17,7 @@
                     <div class="col form-group">
                         <label>Cobro Id</label>
                         <div class="input-group">
-                            <InputNumber  @bind-Value="ventas" class="form-control" col-4 />
+                            <InputNumber  @bind-Value="cobros.CobroId" class="form-control" col-4 />
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar"><i class="oi oi-magnifying-glass px-3" /></button>
                             </div>
@@ -26,14 +26,17 @@
 
                     <div class="col form-group">
                         <label>Fecha</label>
-                        <InputDate @bind-Value="ventas" class="form-control"  />
+                        <InputDate @bind-Value="cobros.Fecha" class="form-control"  />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Cliente</label>
-                    <InputSelect @bind-Value="ventas"  class="form-control">
-                        
+                    <InputSelect @bind-Value="cobros.ClienteId"  class="form-control">
+                        @foreach (var item in listaClientes)
+                        {
+                            <option value="@item.ClienteId">@item.Nombres</option>
+                        }
                     </InputSelect>
                 </div>
 
@@ -57,12 +60,19 @@
                                         <th>Pagar</th>
                                     </tr>
                                 </thead>
-                                <!--<tbody>-->
-                                @*  @foreach (var item in collection)
-                                    {
-
-                                    }*@
-                                <!--</tbody>-->
+                                <tbody>
+                                  @foreach (var item in cobros.Detalle)
+                                   {
+                                      <tr>
+                                          <td>@item.VentaId</td>
+                                          <td>@item.Venta.Fecha</td>
+                                          <td>@item.Venta.Monto</td>
+                                          <td>@item.Venta.Balance</td>
+                                          <td>@item.Cobrado</td>
+                                          <td><input type="checkbox"/></td>
+                                      </tr>
+                                   }
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -74,7 +84,7 @@
                             <div class="form-group row m-1">
                                 <label class="col-form-label">Totales:</label>
                                 <div class="input-group col-sm-3">
-                                    <InputNumber @bind-Value="ventas" class="form-control" />
+                                    <InputNumber @bind-Value="cobros.Totales" class="form-control" />
                                 </div>
                             </div>
                         </div>
@@ -83,7 +93,7 @@
                             <div class="form-group row">
                                 <label class="col-form-label">Total Cobrado</label>
                                 <div class="col-sm-3">
-                                    <InputNumber @bind-Value="ventas" class="form-control" />
+                                    <InputNumber @bind-Value="cobros.Cobrado" class="form-control" />
                                 </div>
                             </div>
                         </div>
@@ -92,7 +102,7 @@
 
                 <div class="border-info">
                     <h5>Observaciones</h5>
-                    <InputTextArea class="form-control" />
+                    <InputTextArea @bind-Value="cobros.Observaciones" class="form-control" />
                 </div>
             </form>
         </div>
@@ -111,7 +121,12 @@
 @code {
     [Parameter]
     public int CobroId { get; set; }
-    public Ventas ventas = new Ventas();
+
+    public Cobros cobros = new Cobros();
+
+    public List<Clientes> listaClientes = new List<Clientes>();
+    @*public List<Ventas> listaVentas = new List<Ventas>();
+    public Ventas ventas = new Ventas();*@
 
 
     protected override void OnInitialized()
@@ -121,12 +136,21 @@
 
     public void Limpiar()
     {
-
+        cobros = new Cobros();
+        listaClientes = ClientesBLL.GetList(r => true);
     }
 
     public void Buscar()
     {
+        if (cobros.CobroId > 0)
+        {
+            var encontrado = CobrosBLL.Buscar(cobros.CobroId);
 
+            if (encontrado != null)
+                this.cobros = encontrado;
+            else
+                toast.ShowInfo("No encontrado.");
+        }
     }
 
     public void Nuevo()
@@ -136,11 +160,27 @@
 
     public void Guardar()
     {
+        var guardar = CobrosBLL.Guardar(cobros);
 
+        if (guardar)
+        {
+            Nuevo();
+            toast.ShowSuccess("Guardado Correctamente");
+        }
+        else
+            toast.ShowError("No fue posible guardar");
     }
 
     public void Eliminar()
     {
+        var eliminar = CobrosBLL.Eliminar(cobros.CobroId);
 
+        if (eliminar)
+        {
+            Nuevo();
+            toast.ShowSuccess("Eliminado Correctamente");
+        }
+        else
+            toast.ShowError("No fue posible eliminar");
     }
 }
