@@ -1,0 +1,115 @@
+﻿@page "/cVentas"
+
+<EditForm Model="ventas">
+    <DataAnnotationsValidator />
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Consulta de Ventas</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group">
+                <label>Filtrar por</label>
+                <div class="input-group-append">
+                    <InputSelect @bind-Value="filtro" class="form-control col-2">
+                        <option value="0">Todo</option>
+                        <option value="1">Venta Id</option>
+                        <option value="2">Cliente Id</option>
+                        <option value="3">Monto</option>
+                        <option value="4">Balance</option>
+                    </InputSelect>
+                    <InputText @bind-Value="criterio" class="form-control col-8" placeholder="Criterio" />
+                    <button type="button" class="btn btn-primary col-1" @onclick="Buscar"><i class="oi oi-magnifying-glass mr-2" />Buscar</button>
+                    <button type="button" class="btn btn-success col-1" @onclick="Nuevo"><i class="oi oi-file mr-2" />Nuevo</button>
+                </div>
+            </div>
+            <div class="table-responsive text-nowrap" style="position:relative; height:200px; overflow: auto; display:block;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>VentaId</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in ventas)
+                        {
+                            <tr>
+                                <td>@item.VentaId</td>
+                                <td>@GetDescripcion(item.ClienteId)</td>
+                                <td>@item.Fecha</td>
+                                <td>@item.Monto</td>
+                                <td>@item.Balance</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</EditForm>
+
+@code {
+    public List<Ventas> ventas = new List<Ventas>();
+
+    private int filtro;
+    private string criterio;
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public string GetDescripcion(int id)
+    {
+        Clientes clientes = new Clientes();
+
+        clientes = ClientesBLL.Buscar(id);
+
+        return clientes.Nombres;
+    }
+
+    public void Nuevo()
+    {
+        ventas = new List<Ventas>();
+        filtro = 0;
+        criterio = string.Empty;
+    }
+
+    public void Buscar()
+    {
+        ventas = new List<Ventas>();
+
+        if (criterio.Length > 0)
+        {
+            switch (filtro)
+            {
+                case 0://Todo
+                    ventas = VentasBLL.GetList(e => true);
+                    break;
+                case 1://VentaId
+                    ventas = VentasBLL.GetList(e => e.VentaId == Conversiones.ToInt(criterio));
+                    break;
+                case 2://ClienteId
+                    ventas = VentasBLL.GetList(e => e.ClienteId == Conversiones.ToInt(criterio));
+                    break;
+                case 3://Monto
+                    ventas = VentasBLL.GetList(e => e.Monto == Conversiones.ToDouble(criterio));
+                    break;
+                case 4://Balance
+                    ventas = VentasBLL.GetList(e => e.Balance == Conversiones.ToDouble(criterio));
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+            ventas = VentasBLL.GetList(e => true);
+    }
+}
