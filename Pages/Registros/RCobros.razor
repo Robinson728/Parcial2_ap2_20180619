@@ -32,7 +32,7 @@
 
                 <div class="form-group">
                     <label>Cliente</label>
-                    <InputSelect @bind-Value="cobros.ClienteId"  class="form-control">
+                    <InputSelect @bind-Value="cobros.ClienteId" class="form-control" @onclick="GetPendientes">
                         @foreach (var item in listaClientes)
                         {
                             <option value="@item.ClienteId">@item.Nombres</option>
@@ -69,7 +69,7 @@
                                           <td>@item.Venta.Monto</td>
                                           <td>@item.Venta.Balance</td>
                                           <td>@item.Cobrado</td>
-                                          <td><input type="checkbox"/></td>
+                                          <td><input type="checkbox" @onchange="@(() => GetCobro(item))"/></td>
                                       </tr>
                                    }
                                 </tbody>
@@ -125,13 +125,34 @@
     public Cobros cobros = new Cobros();
 
     public List<Clientes> listaClientes = new List<Clientes>();
-    @*public List<Ventas> listaVentas = new List<Ventas>();
-    public Ventas ventas = new Ventas();*@
 
+    private void GetPendientes()
+    {
+        if (cobros.CobroId == 0)
+            cobros.Detalle = VentasBLL.GetPendientes(cobros.ClienteId);
+    }
+
+    private void GetCobro(CobrosDetalle cobrosDetalle)
+    {
+        if (cobrosDetalle.Cobrado == 0)
+        {
+            cobros.Totales++;
+            cobrosDetalle.Cobrado = cobrosDetalle.Venta.Balance;
+            cobros.Cobrado += cobrosDetalle.Cobrado;
+        }
+        else
+        {
+            cobros.Totales--;
+            cobrosDetalle.Cobrado = 0;
+            cobros.Cobrado -= cobrosDetalle.Venta.Balance;
+        }
+    }
 
     protected override void OnInitialized()
     {
         Nuevo();
+        Buscar();
+
     }
 
     public void Limpiar()
@@ -147,7 +168,10 @@
             var encontrado = CobrosBLL.Buscar(cobros.CobroId);
 
             if (encontrado != null)
+            {
+                cobros.Detalle = VentasBLL.GetPagadas(cobros.ClienteId);
                 this.cobros = encontrado;
+            }
             else
                 toast.ShowInfo("No encontrado.");
         }
@@ -160,15 +184,22 @@
 
     public void Guardar()
     {
-        var guardar = CobrosBLL.Guardar(cobros);
-
-        if (guardar)
+        if (cobros.CobroId == 0)
         {
-            Nuevo();
-            toast.ShowSuccess("Guardado Correctamente");
+
+            var guardar = CobrosBLL.Guardar(cobros);
+
+            if (guardar)
+            {
+                Nuevo();
+                toast.ShowSuccess("Guardado Correctamente");
+            }
+            else
+                toast.ShowError("No fue posible guardar");
+
         }
         else
-            toast.ShowError("No fue posible guardar");
+            toast.ShowInfo("No puede Modificar el registro");
     }
 
     public void Eliminar()
