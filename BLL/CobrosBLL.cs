@@ -13,10 +13,7 @@ namespace Parcial2_ap2_20180619.BLL
     {
         public static bool Guardar(Cobros cobros)
         {
-            if (!Existe(cobros.CobroId))
-                return Insertar(cobros);
-            else
-                return Modificar(cobros);
+            return Insertar(cobros);    
         }
 
         private static bool Existe(int id)
@@ -47,36 +44,14 @@ namespace Parcial2_ap2_20180619.BLL
 
             try
             {
-                contexto.Cobros.Add(cobros);
-                paso = contexto.SaveChanges() > 0;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                contexto.Dispose();
-            }
-
-            return paso;
-        }
-
-        private static bool Modificar(Cobros cobros)
-        {
-            Contexto contexto = new Contexto();
-            bool paso = false;
-
-            try
-            {
-                contexto.Database.ExecuteSqlRaw($"Delete from CobrosDetalle where CobroId = {cobros.CobroId}");
-
                 foreach (var item in cobros.Detalle)
                 {
-                    contexto.Entry(item).State = EntityState.Added;
+                    item.Venta = contexto.Ventas.Find(item.VentaId);
+                    item.Venta.Balance -= item.Cobrado;
+                    contexto.Entry(item.Venta).State = EntityState.Modified;
                 }
 
-                contexto.Entry(cobros).State = EntityState.Modified;
+                contexto.Cobros.Add(cobros);
                 paso = contexto.SaveChanges() > 0;
             }
             catch (Exception)
