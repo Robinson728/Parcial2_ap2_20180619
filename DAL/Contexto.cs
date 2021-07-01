@@ -52,7 +52,7 @@ namespace Parcial2_ap2_20180619.DAL
             //2
             modelBuilder.Entity<Clientes>().HasData(
                 new Clientes() { ClienteId = 2, Nombres = "AVALON DISCO" }
-                );
+                ); 
 
             modelBuilder.Entity<Ventas>().HasData(
                 new Ventas()
