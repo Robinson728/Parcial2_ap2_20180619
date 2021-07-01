@@ -1,0 +1,121 @@
+﻿@page "/cCobros"
+
+<EditForm Model="cobros">
+    <DataAnnotationsValidator />
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Consulta de Cobros</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group">
+                <label>Filtrar por</label>
+                <div class="input-group-append">
+                    <InputSelect @bind-Value="filtro" class="form-control col-2">
+                        <option value="0">Todo</option>
+                        <option value="1">Cobro Id</option>
+                        <option value="2">Cliente Id</option>
+                        <option value="3">Totales</option>
+                        <option value="4">Cobrado</option>
+                        <option value="5">Observaciones</option>
+                    </InputSelect>
+                    <InputText @bind-Value="criterio" class="form-control col-8" placeholder="Criterio" />
+                    <button type="button" class="btn btn-primary col-1" @onclick="Buscar"><i class="oi oi-magnifying-glass mr-2" />Buscar</button>
+                    <button type="button" class="btn btn-success col-1" @onclick="Nuevo"><i class="oi oi-file mr-2" />Nuevo</button>
+                </div>
+            </div>
+            <div class="table-responsive text-nowrap" style="position:relative; height:200px; overflow: auto; display:block;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Cobro Id</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Totales</th>
+                            <th>Cobrado</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in cobros)
+                        {
+                            <tr>
+                                <td>@item.CobroId</td>
+                                <td>@GetDescripcion(item.ClienteId)</td>
+                                <td>@item.Fecha</td>
+                                <td>@item.Totales</td>
+                                <td>@item.Cobrado</td>
+                                <td>@item.Observaciones</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</EditForm>
+
+@code {
+    public List<Cobros> cobros = new List<Cobros>();
+
+    private int filtro;
+    private string criterio;
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public string GetDescripcion(int id)
+    {
+        Clientes clientes = new Clientes();
+
+        clientes = ClientesBLL.Buscar(id);
+
+        return clientes.Nombres;
+    }
+
+    public void Nuevo()
+    {
+        cobros = new List<Cobros>();
+        filtro = 0;
+        criterio = string.Empty;
+    }
+
+    public void Buscar()
+    {
+        cobros = new List<Cobros>();
+
+        if (criterio.Length > 0)
+        {
+            switch (filtro)
+            {
+                case 0://Todo
+                    cobros = CobrosBLL.GetList(e => true);
+                    break;
+                case 1://CobroId
+                    cobros = CobrosBLL.GetList(e => e.CobroId == Conversiones.ToInt(criterio));
+                    break;
+                case 2://ClienteId
+                    cobros = CobrosBLL.GetList(e => e.ClienteId == Conversiones.ToInt(criterio));
+                    break;
+                case 3://Totales
+                    cobros = CobrosBLL.GetList(e => e.Totales == Conversiones.ToDouble(criterio));
+                    break;
+                case 4://Cobrado
+                    cobros = CobrosBLL.GetList(e => e.Cobrado == Conversiones.ToDouble(criterio));
+                    break;
+                case 5://Observaciones
+                    cobros = CobrosBLL.GetList(e => e.Observaciones.Contains(criterio));
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+            cobros = CobrosBLL.GetList(e => true);
+    }
+}
