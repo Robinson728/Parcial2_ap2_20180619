@@ -7,7 +7,7 @@
     <DataAnnotationsValidator />
     <div class="card">
 
-        <div class="card-header">
+        <div class="card-header bg-info">
             <h2>Registro de Cobros</h2>
         </div>
 
@@ -50,7 +50,7 @@
                         <div class="table-responsive text-nowrap" style="position: relative; height:200px; overflow: auto; display: block;">
                             <table class="table table-striped">
 
-                                <thead class="thead-light">
+                                <thead class="bg-info">
                                     <tr>
                                         <th>Id</th>
                                         <th>Fecha</th>
@@ -81,19 +81,19 @@
                 <div class="form-group">
                     <div class="row align-items-center">
                         <div class="col">
-                            <div class="form-group row m-1">
+                            <div class="form-group row m-2">
                                 <label class="col-form-label">Totales:</label>
                                 <div class="input-group col-sm-3">
-                                    <InputNumber @bind-Value="cobros.Totales" class="form-control" />
+                                    <InputNumber @bind-Value="cobros.Totales" class="form-control" readonly/>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col">
-                            <div class="form-group row">
+                            <div class="form-group row m-2">
                                 <label class="col-form-label">Total Cobrado</label>
                                 <div class="col-sm-3">
-                                    <InputNumber @bind-Value="cobros.Cobrado" class="form-control" />
+                                    <InputNumber @bind-Value="cobros.Cobrado" class="form-control" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +120,7 @@
 
 @code {
     [Parameter]
-    public int CobroId { get; set; }
+    public int CobroId { get; set; } = 0;
 
     public Cobros cobros = new Cobros();
 
@@ -128,8 +128,11 @@
 
     private void GetPendientes()
     {
-        if (cobros.CobroId == 0)
-            cobros.Detalle = VentasBLL.GetPendientes(cobros.ClienteId);
+        if (cobros.ClienteId == 0)
+            return;
+
+
+        cobros.Detalle = VentasBLL.GetPendientes(cobros.ClienteId);
     }
 
     private void GetCobro(CobrosDetalle cobrosDetalle)
@@ -152,7 +155,6 @@
     {
         Nuevo();
         Buscar();
-
     }
 
     public void Limpiar()
@@ -166,14 +168,17 @@
         if (cobros.CobroId > 0)
         {
             var encontrado = CobrosBLL.Buscar(cobros.CobroId);
+            cobros.Detalle = VentasBLL.GetPagadas(cobros.ClienteId);
 
             if (encontrado != null)
             {
-                cobros.Detalle = VentasBLL.GetPagadas(cobros.ClienteId);
                 this.cobros = encontrado;
             }
             else
+            {
+                Nuevo();
                 toast.ShowInfo("No encontrado.");
+            }
         }
     }
 
@@ -186,8 +191,8 @@
     {
         if (cobros.CobroId == 0)
         {
-
             var guardar = CobrosBLL.Guardar(cobros);
+
 
             if (guardar)
             {

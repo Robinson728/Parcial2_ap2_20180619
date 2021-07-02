@@ -11,6 +11,32 @@ namespace Parcial2_ap2_20180619.BLL
 {
     public class VentasBLL
     {
+        public static bool Guardar(Ventas ventas)
+        {
+            return Modificar(ventas);
+        }
+
+          private static bool Modificar(Ventas ventas)
+        {
+            bool paso = false;
+            Contexto contexto = new Contexto();
+
+            try
+            {
+                contexto.Entry(ventas).State = EntityState.Modified;
+                paso = contexto.SaveChanges() > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+            return paso;
+        }
+
         public static Ventas Buscar(int id)
         {
             Contexto contexto = new Contexto();

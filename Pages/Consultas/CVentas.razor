@@ -4,7 +4,7 @@
     <DataAnnotationsValidator />
     <div class="card">
 
-        <div class="card-header">
+        <div class="card-header bg-info">
             <h2>Consulta de Ventas</h2>
         </div>
 
@@ -26,7 +26,7 @@
             </div>
             <div class="table-responsive text-nowrap" style="position:relative; height:200px; overflow: auto; display:block;">
                 <table class="table table-striped">
-                    <thead>
+                    <thead class="bg-info">
                         <tr>
                             <th>VentaId</th>
                             <th>Cliente</th>
@@ -63,7 +63,7 @@
 
     protected override void OnInitialized()
     {
-        Nuevo();
+        ventas = VentasBLL.GetList(e => true);
     }
 
     public string GetDescripcion(int id)

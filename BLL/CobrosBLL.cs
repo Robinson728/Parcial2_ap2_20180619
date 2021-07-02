@@ -13,28 +13,7 @@ namespace Parcial2_ap2_20180619.BLL
     {
         public static bool Guardar(Cobros cobros)
         {
-            return Insertar(cobros);    
-        }
-
-        private static bool Existe(int id)
-        {
-            Contexto contexto = new Contexto();
-            bool encontrado = false;
-
-            try
-            {
-                encontrado = contexto.Cobros.Any(e => e.CobroId == id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                contexto.Dispose();
-            }
-
-            return encontrado;
+            return Insertar(cobros);
         }
 
         private static bool Insertar(Cobros cobros)
@@ -48,7 +27,7 @@ namespace Parcial2_ap2_20180619.BLL
                 {
                     item.Venta = contexto.Ventas.Find(item.VentaId);
                     item.Venta.Balance -= item.Cobrado;
-                    contexto.Entry(item.Venta).State = EntityState.Modified;
+                    VentasBLL.Guardar(item.Venta);
                 }
 
                 contexto.Cobros.Add(cobros);
@@ -73,13 +52,26 @@ namespace Parcial2_ap2_20180619.BLL
 
             try
             {
-                var eliminado = contexto.Cobros.Find(id);
+                var eliminado = Buscar(id);
 
                 if (eliminado != null)
                 {
-                    contexto.Entry(eliminado).State = EntityState.Deleted;
+                    contexto.Cobros.Remove(eliminado);
                     paso = contexto.SaveChanges() > 0;
-                }
+
+                    if (paso)
+                    {
+                        foreach (var cobroDetalle in eliminado.Detalle)
+                        {
+                            var ventas = VentasBLL.Buscar(cobroDetalle.VentaId);
+                            if (ventas != null)
+                            {
+                                ventas.Balance += cobroDetalle.Cobrado;
+                                VentasBLL.Guardar(ventas);
+                            }
+                        }
+                    }
+                }                
             }
             catch (Exception)
             {

@@ -1,10 +1,14 @@
 ﻿@page "/cCobros"
 
+@inject IToastService toast  
+@inject NavigationManager Nav
+@inject IJSRuntime Confirmation    
+
 <EditForm Model="cobros">
     <DataAnnotationsValidator />
     <div class="card">
 
-        <div class="card-header">
+        <div class="card-header bg-info">
             <h2>Consulta de Cobros</h2>
         </div>
 
@@ -27,7 +31,7 @@
             </div>
             <div class="table-responsive text-nowrap" style="position:relative; height:200px; overflow: auto; display:block;">
                 <table class="table table-striped">
-                    <thead>
+                    <thead class="bg-info">
                         <tr>
                             <th>Cobro Id</th>
                             <th>Cliente</th>
@@ -35,6 +39,7 @@
                             <th>Totales</th>
                             <th>Cobrado</th>
                             <th>Observaciones</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
 
@@ -48,6 +53,10 @@
                                 <td>@item.Totales</td>
                                 <td>@item.Cobrado</td>
                                 <td>@item.Observaciones</td>
+                                <td>
+                                    <button class="btn btn-info" @onclick="() => Editar(item.CobroId)" ><i class="oi oi-pencil" aria-hidden="true"/></button>
+                                    <button class="btn btn-danger" @onclick="() => Eliminar(item.CobroId)" aria-hidden="true"><i class="oi oi-trash"/></button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -66,7 +75,7 @@
 
     protected override void OnInitialized()
     {
-        Nuevo();
+        cobros = CobrosBLL.GetList(e => true);
     }
 
     public string GetDescripcion(int id)
@@ -83,6 +92,11 @@
         cobros = new List<Cobros>();
         filtro = 0;
         criterio = string.Empty;
+    }
+
+    public void Editar(int id)
+    {
+        Nav.NavigateTo($"/rCobros/{id}");
     }
 
     public void Buscar()
@@ -117,5 +131,19 @@
         }
         else
             cobros = CobrosBLL.GetList(e => true);
+    }
+
+
+    public void Eliminar(int id)
+    {
+        var eliminado = CobrosBLL.Eliminar(id);
+
+        if (eliminado)
+        {
+            Nuevo();
+            toast.ShowSuccess("Eliminado Correctamente.");
+        }
+        else
+            toast.ShowError("No fue posible eliminar.");
     }
 }
