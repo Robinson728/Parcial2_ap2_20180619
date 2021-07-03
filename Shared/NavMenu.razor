@@ -12,31 +12,56 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
+
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="rCobros">
-                <span class="oi oi-plus" aria-hidden="true" /> Registro Cobros
+            <NavLink class="nav-link" @onclick="() => ExpandirRegistros = !ExpandirRegistros">
+                <span class="oi oi-plus" aria-hidden="true"></span> Registros
             </NavLink>
+
+            @if (ExpandirRegistros)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="rCobros">
+                            <span class="oi oi-dollar" aria-hidden="true"></span> Registro Cobros
+                        </NavLink>
+                    </li>
+                </ul>
+            }
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="cClientes">
-                <span class="oi oi-plus" aria-hidden="true" /> Consulta Clientes
+            <NavLink class="nav-link" @onclick="() => ExpandirConsultas = !ExpandirConsultas">
+                <span class="oi oi-magnifying-glass" aria-hidden="true"></span> Consultas
             </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="cVentas">
-                <span class="oi oi-list-rich" aria-hidden="true" /> Consulta Ventas
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="cCobros">
-                <span class="oi oi-plus" aria-hidden="true" /> Consulta Cobros
-            </NavLink>
+
+            @if (ExpandirConsultas)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="cCobros">
+                            <span class="oi oi-dollar" aria-hidden="true"></span> Consulta Cobros
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="cVentas">
+                            <span class="oi oi-cart" aria-hidden="true"></span> Consulta Ventas
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="cClientes">
+                            <span class="oi oi-person" aria-hidden="true"></span> Consulta Clientes
+                        </NavLink>
+                    </li>
+                </ul>
+            }
         </li>
     </ul>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool ExpandirRegistros;
+    private bool ExpandirConsultas;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
